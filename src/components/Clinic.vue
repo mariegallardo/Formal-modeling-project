@@ -83,6 +83,7 @@
     <button v-on:click="startTreatment(clientToRefuse)">Start treatment</button>
     <button v-on:click="treatmentFinished(clientToRefuse)">Treatment finished</button>
     <button v-on:click="patientChecksOut(clientToRefuse)">Patient checks out</button>
+    <button v-on:click="addASecond">Add a second</button>
     <button v-on:click="requestForARoom">Request for a room</button>
     <button v-on:click="offersARoom">Offers a room</button>
     <button v-on:click="outsideAsksForARoom">Outside asks for a room</button>
@@ -149,7 +150,10 @@ export default {
         this.patientsArrived.splice(i, 1)
         this.totalPatientsBeforeTreatment++
         this.paperworkToFill.push(patientWithPaperToFill)
+        return true
       }
+
+      return false
     },
     fillsPaperwork: function (id) {
       for (var i = 0; i < this.paperworkToFill.length && this.paperworkToFill[i].id != id; i++){
@@ -168,7 +172,7 @@ export default {
       }
       
       if (i < this.paperworkFilled.length && this.nursesAvailable > 0) {
-        var patient = new Step(this.paperworkFilled[i].nameOfClient, 5, 10, id)
+        var patient = new Step(this.paperworkFilled[i].nameOfClient, 0, 9999, id)
         this.paperworkFilled.splice(i, 1)
         this.nursesAvailable--
         this.paperworkProcessFinished.push(patient)
@@ -180,7 +184,7 @@ export default {
       }
       
       if (i < this.paperworkProcessFinished.length && this.roomsAvailable > 0) {
-        var patient = new Step(this.paperworkProcessFinished[i].nameOfClient, 5, 10, id)
+        var patient = new Step(this.paperworkProcessFinished[i].nameOfClient, 0, 99999, id)
         this.paperworkProcessFinished.splice(i, 1)
         this.roomsAvailable--
         this.nursesAvailable++
@@ -193,7 +197,7 @@ export default {
       }
       
       if (i < this.patientsWaitingInEmergencyRoom.length && this.physiciansAvailable > 0) {
-        var patient = new Step(this.patientsWaitingInEmergencyRoom[i].nameOfClient, 5, 10, id)
+        var patient = new Step(this.patientsWaitingInEmergencyRoom[i].nameOfClient, 20, 90, id)
         this.patientsWaitingInEmergencyRoom.splice(i, 1)
         this.totalPatientsBeforeTreatment--
         this.physiciansAvailable--
@@ -289,6 +293,91 @@ export default {
         }
         this.messagesAskingForPhysicians.splice(0, 1)
       }
+    },
+    addASecond: function () {
+      // For each list, add a second on all the Step elements in all the lists, if the maximum time reached 0,
+      // the default action is executed
+      this.addSecondOnPatientArrived()
+      this.addSecondOnFillsPapework()
+      this.addSecondOnProcessPaperwork()
+      this.addSecondOnGoesInEmergency()
+      this.addSecondOnStartTreatment()
+      this.addSecondOnProceedTreatment()
+      this.addSecondOnChecksOut()
+    },
+    addSecondOnPatientArrived: function () {
+      this.patientsArrived.forEach(element => {
+        /* eslint-disable no-console */
+        console.log(element.minDuration.type)
+        console.log(Math.max(0, element.minDuration - 1))
+        element.minDuration = Math.max(0, element.minDuration - 1)
+        element.maxDuration = Math.max(0, element.maxDuration - 1)
+        console.log(element)
+        
+        if (element.maxDuration === 0){
+          if(!this.acceptPatient(element.id)){
+            this.patientRefused(element.id)
+          }
+        }
+      })
+    },
+    addSecondOnFillsPapework: function () {
+      this.paperworkToFill.forEach(element => {
+        element.minDuration = Math.max(0, element.minDuration - 1)
+        element.maxDuration = Math.max(0, element.maxDuration - 1)
+        
+        if (element.maxDuration === 0){
+          this.fillsPaperwork(element.id)
+        }
+      })
+    },
+    addSecondOnProcessPaperwork: function () {
+      var nurses = this.nursesAvailable
+      this.paperworkToFill.forEach(element => {
+        if (nurses > 0) {
+          element.minDuration = Math.max(0, element.minDuration - 1)
+          element.maxDuration = Math.max(0, element.maxDuration - 1)
+          nurses--
+        }
+        
+        if (element.maxDuration === 0) {
+          this.fillsPaperwork(element.id)
+        }
+      })
+    },
+    addSecondOnGoesInEmergency: function () {
+      this.paperworkToFill.forEach(element => {
+        if (this.roomsAvailable > 0) {
+          this.goesInEmergencyRoom(element.id)
+        }
+      })
+    },
+    addSecondOnStartTreatment: function () {
+      this.paperworkToFill.forEach(element => {
+        if (this.physiciansAvailable > 0) {
+          this.startTreatment(element.id)
+        }
+      })
+    },
+    addSecondOnProceedTreatment: function () {
+      this.patientsUnderTreatment.forEach(element => {
+        element.minDuration = Math.max(0, element.minDuration - 1)
+        element.maxDuration = Math.max(0, element.maxDuration - 1)
+        
+        if (element.maxDuration === 0){
+          this.treatmentFinished(element.id)
+        }
+      })
+    },
+    addSecondOnChecksOut: function () {
+      this.patientsHealed.forEach(element => {
+        element.minDuration = Math.max(0, element.minDuration - 1)
+        element.maxDuration = Math.max(0, element.maxDuration - 1)
+        
+        if (element.maxDuration === 0){
+          this.patientChecksOut(element.id)
+        }
+      })
     }
   }
 }
