@@ -398,7 +398,6 @@ export default {
       })
     },
     launchAutonomousSystem: function () {
-      /* eslint-disable no-console */
       if (this.totalPatientsBeforeTreatment === 0) {
         this.offersARoom()
         this.offersAPhysician()
@@ -428,11 +427,11 @@ export default {
         this.outsideAsksForAPhysician()
       }
       
-      if (this.messagesAskingForRoom.length > 1 && Math.round(Math.random() * 10) === 1) {
+      if (this.messagesAskingForRoom.length > 1 && Math.round(Math.random() * 5) === 1) {
         this.outsideOffersARoom()
       }
       
-      if (this.messagesAskingForPhysicians.length > 1 && Math.round(Math.random() * 10) === 1) {
+      if (this.messagesAskingForPhysicians.length > 1 && Math.round(Math.random() * 5) === 1) {
         this.outsideOffersAPhysician()
       }
 
