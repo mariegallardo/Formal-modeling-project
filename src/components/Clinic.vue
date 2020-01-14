@@ -15,14 +15,15 @@
     <h3 class="displayInfo">Total patients under treatment: {{totalPatientsBeforeTreatment}} &nbsp;-</h3>
     <br/>
     <button v-on:click="patientComesIn">Patients comes in</button>
-    <button v-on:click="patientRefused">Patient refused</button>
-    <button v-on:click="acceptPatient">Accept patient</button>
-    <button v-on:click="fillsPaperwork">Fills paperwork</button>
-    <button v-on:click="processPaperwork">Process paperwork</button>
-    <button v-on:click="goesInEmergencyRoom">Goes in emergenct room</button>
-    <button v-on:click="startTreatment">Start treatment</button>
-    <button v-on:click="treatmentFinished">Treatment finished</button>
-    <button v-on:click="patientChecksOut">Patient checks out</button>
+    <input v-model="clientToRefuse">
+    <button v-on:click="patientRefused(clientToRefuse)">Patient refused</button>
+    <button v-on:click="acceptPatient(clientToRefuse)">Accept patient</button>
+    <button v-on:click="fillsPaperwork(clientToRefuse)">Fills paperwork</button>
+    <button v-on:click="processPaperwork(clientToRefuse)">Process paperwork</button>
+    <button v-on:click="goesInEmergencyRoom(clientToRefuse)">Goes in emergency room</button>
+    <button v-on:click="startTreatment(clientToRefuse)">Start treatment</button>
+    <button v-on:click="treatmentFinished(clientToRefuse)">Treatment finished</button>
+    <button v-on:click="patientChecksOut(clientToRefuse)">Patient checks out</button>
     <button v-on:click="requestForARoom">Request for a room</button>
     <button v-on:click="offersARoom">Offers a room</button>
     <button v-on:click="outsideAsksForARoom">Outside asks for a room</button>
@@ -41,71 +42,123 @@ export default {
   name: 'clinic',
   data: function () {
     return {
-      patientsArrived: 0,
-      paperworkToFill: 0,
-      paperworkFilled: 0,
-      paperworkProcessFinished: 0,
-      patientsWaitingInEmergencyRoom: 0,
-      patientsUnderTreatment: 0,
-      patientsHealed: 0,
+      patientsArrived: [],
+      paperworkToFill: [],
+      paperworkFilled: [],
+      paperworkProcessFinished: [],
+      patientsWaitingInEmergencyRoom: [],
+      patientsUnderTreatment: [],
+      patientsHealed: [],
       nursesAvailable: 5,
       roomsAvailable: 5,
       physiciansAvailable: 5,
-      messagesAskingForRoom: 0,
-      messagesAskingForPhysicians: 0,
-      totalPatientsBeforeTreatment: 0
+      messagesAskingForRoom: [],
+      messagesAskingForPhysicians: [],
+      totalPatientsBeforeTreatment: 0,
+      totalPatientsWelcomed: 0
     }
   },
   methods: {
     patientComesIn: function () {
-      this.patientsArrived++
+      var newClient = new Step("anonymous", 0, 15, this.totalPatientsWelcomed)
+      this.totalPatientsWelcomed++
+      this.patientsArrived.push(newClient)
     },
-    patientRefused: function () {
-      if (this.patientsArrived > 0) {
-        this.patientsArrived--
-      }
-    },
-    acceptPatient: function () {
-      if (this.totalPatientsBeforeTreatment >= 5) {
-        return false;
+    patientRefused: function (id) {
+      for (var i = 0; i < this.patientsArrived.length && this.patientsArrived[i].id != id; i++){
+        continue;
       }
       
-      this.patientsArrived--
-      this.totalPatientsBeforeTreatment++
-      this.paperworkToFill++
-      return true
-    },
-    fillsPaperwork: function () {
-      if (this.paperworkToFill > 0) {
-        this.paperworkToFill--
-        this.paperworkFilled++
+      if (i < this.patientsArrived.length) {
+        this.patientsArrived.splice(i, 1)
       }
     },
-    processPaperwork: function () {
-      this.paperworkFilled--
-      this.nursesAvailable--
-      this.paperworkProcessFinished++
+    acceptPatient: function (id) {
+      if (this.totalPatientsBeforeTreatment >= 5) {
+        return false
+      }
+      
+      for (var i = 0; i < this.patientsArrived.length && this.patientsArrived[i].id != id; i++){
+        continue;
+      }
+      
+      if (i < this.patientsArrived.length) {
+        var patientWithPaperToFill = new Step(this.patientsArrived[i].nameOfClient, 5, 10, id)
+        this.patientsArrived.splice(i, 1)
+        this.totalPatientsBeforeTreatment++
+        this.paperworkToFill.push(patientWithPaperToFill)
+      }
     },
-    goesInEmergencyRoom: function () {
-      this.paperworkProcessFinished--
-      this.roomsAvailable--
-      this.nursesAvailable++
-      this.patientsWaitingInEmergencyRoom++
+    fillsPaperwork: function (id) {
+      for (var i = 0; i < this.paperworkToFill.length && this.paperworkToFill[i].id != id; i++){
+        continue;
+      }
+      
+      if (i < this.paperworkToFill.length) {
+        var patientWithPaperToFill = new Step(this.paperworkToFill[i].nameOfClient, 5, 10, id)
+        this.paperworkToFill.splice(i, 1)
+        this.paperworkFilled.push(patientWithPaperToFill)
+      }
     },
-    startTreatment: function () {
-      this.totalPatientsBeforeTreatment--
-      this.patientsWaitingInEmergencyRoom--
-      this.physiciansAvailable--
-      this.patientsUnderTreatment++
+    processPaperwork: function (id) {
+      for (var i = 0; i < this.paperworkFilled.length && this.paperworkFilled[i].id != id; i++){
+        continue;
+      }
+      
+      if (i < this.paperworkFilled.length && this.nursesAvailable > 0) {
+        var patient = new Step(this.paperworkFilled[i].nameOfClient, 5, 10, id)
+        this.paperworkFilled.splice(i, 1)
+        this.nursesAvailable--
+        this.paperworkProcessFinished.push(patient)
+      }
     },
-    treatmentFinished: function () {
-      this.patientsUnderTreatment--
-      this.physiciansAvailable++
-      this.roomsAvailable++
-      this.patientsHealed++
+    goesInEmergencyRoom: function (id) {
+      for (var i = 0; i < this.paperworkProcessFinished.length && this.paperworkProcessFinished[i].id != id; i++){
+        continue;
+      }
+      
+      if (i < this.paperworkProcessFinished.length && this.roomsAvailable > 0) {
+        var patient = new Step(this.paperworkProcessFinished[i].nameOfClient, 5, 10, id)
+        this.paperworkProcessFinished.splice(i, 1)
+        this.roomsAvailable--
+        this.nursesAvailable++
+        this.patientsWaitingInEmergencyRoom.push(patient)
+      }
     },
-    patientChecksOut: function () {
-      this.patientsHealed--
+    startTreatment: function (id) {
+      for (var i = 0; i < this.patientsWaitingInEmergencyRoom.length && this.patientsWaitingInEmergencyRoom[i].id != id; i++){
+        continue;
+      }
+      
+      if (i < this.patientsWaitingInEmergencyRoom.length && this.physiciansAvailable > 0) {
+        var patient = new Step(this.patientsWaitingInEmergencyRoom[i].nameOfClient, 5, 10, id)
+        this.patientsWaitingInEmergencyRoom.splice(i, 1)
+        this.totalPatientsBeforeTreatment--
+        this.physiciansAvailable--
+        this.patientsUnderTreatment.push(patient)
+      }
+    },
+    treatmentFinished: function (id) {
+      for (var i = 0; i < this.patientsUnderTreatment.length && this.patientsUnderTreatment[i].id != id; i++){
+        continue;
+      }
+      
+      if (i < this.patientsUnderTreatment.length) {
+        var patient = new Step(this.patientsUnderTreatment[i].nameOfClient, 5, 10, id)
+        this.patientsUnderTreatment.splice(i, 1)
+        this.physiciansAvailable++
+        this.roomsAvailable++
+        this.patientsHealed.push(patient)
+      }
+    },
+    patientChecksOut: function (id) {
+      for (var i = 0; i < this.patientsHealed.length && this.patientsHealed[i].id != id; i++){
+        continue;
+      }
+      
+      if (i < this.patientsHealed.length) {
+        this.patientsHealed.splice(i, 1)
+      }
     },
     // The observed service asks for a room
     requestForARoom: function () {
@@ -113,18 +166,24 @@ export default {
     },
     // The observed service offers for a room
     offersARoom: function () {
-      this.messagesAskingForRoom--
-      this.roomsAvailable--
+      if (this.messagesAskingForRoom > 0 && this.roomsAvailable > 0) {
+        this.messagesAskingForRoom--
+        this.roomsAvailable--
+      }
     },
     rejectDemandForRoom: function () {
-      this.messagesAskingForRoom--
+      if (this.messagesAskingForRoom > 0) {
+        this.messagesAskingForRoom--
+      }
     },
     outsideAsksForARoom: function () {
       this.messagesAskingForRoom++
     },
     outsideOffersARoom: function () {
-      this.messagesAskingForRoom--
-      this.roomsAvailable++
+      if (this.messagesAskingForRoom > 0) {
+        this.messagesAskingForRoom--
+        this.roomsAvailable++
+      }
     },
     // The observed service asks for a physician
     requestFormAPhysician: function () {
@@ -132,19 +191,49 @@ export default {
     },
     // The observed service offers for a physician
     offersAPhysician: function () {
-      this.messagesAskingForPhysicians--
-      this.physiciansAvailable--
+      if (this.messagesAskingForPhysicians > 0 && this.physiciansAvailable > 0) {
+        this.messagesAskingForPhysicians--
+        this.physiciansAvailable--
+      }
     },
     rejectDemandForPhysician: function () {
-      this.messagesAskingForPhysicians--
+      if (this.messagesAskingForPhysicians > 0) {
+        this.messagesAskingForPhysicians--
+      }
     },
     outsideAsksForAPhysician: function () {
       this.messagesAskingForPhysicians++
     },
     outsideOffersAPhysician: function () {
-      this.messagesAskingForPhysicians--
-      this.physiciansAvailable++
+      if (this.messagesAskingForPhysicians > 0) {
+        this.messagesAskingForPhysicians--
+        this.physiciansAvailable++
+      }
     }
+  }
+}
+
+/*class RequestForRoom {
+  constructor(isItFromYourService, timeWaited){
+    this.isItFromYourService = isItFromYourService
+    this.timeWaited = timeWaited
+  }
+}
+
+class RequestForPhysician {
+  constructor(isItFromYourService, timeWaited){
+    this.isItFromYourService = isItFromYourService
+    this.timeWaited = timeWaited
+  }
+}*/
+
+
+class Step {
+  constructor(nameOfClient, minDuration, maxDuration, id){
+    this.nameOfClient = nameOfClient
+    this.maxTime = maxDuration
+    this.minTime = minDuration
+    this.id = id
   }
 }
 </script>
