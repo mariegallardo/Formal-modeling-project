@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!--
+    
     <h3 class="displayInfo">Number of available nurses : {{nursesAvailable}} &nbsp;</h3>
     <h3 class="displayInfo">Number of available physician : {{physiciansAvailable}} &nbsp;-</h3>
     <h3 class="displayInfo">Number of available roomsAvailable : {{roomsAvailable}} &nbsp;-</h3>
@@ -15,7 +15,7 @@
     <h3 class="displayInfo">Number of requests for a physician: {{messagesAskingForPhysicians}} &nbsp;-</h3>
     <h3 class="displayInfo">Total patients under treatment: {{totalPatientsBeforeTreatment}} &nbsp;-</h3>
     <br/>
-    -->
+    
 
     <p>Number of available nurses:{{nursesAvailable}}</p>
     <p>Number of available physician:{{physiciansAvailable}}</p>
@@ -23,7 +23,7 @@
     <table>
       <tr>
         <td>patient comes in</td>
-        <td>patient fills paperwork</td>
+        <td>patient fills the paperwork</td>
         <td>paperwork filled</td>
         <td>paperwork processed by nurse finished</td>
         <td>patients waiting in emergency room</td>
