@@ -1,5 +1,7 @@
 <template>
+
   <div>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <!--
     <h3 class="displayInfo">Number of available nurses : {{nursesAvailable}} &nbsp;</h3>
     <h3 class="displayInfo">Number of available physician : {{physiciansAvailable}} &nbsp;-</h3>
@@ -16,7 +18,19 @@
     <h3 class="displayInfo">Total patients under treatment: {{totalPatientsBeforeTreatment}} &nbsp;-</h3>
     <br/>
     -->
-    
+    <aside>
+      <table>
+        <thead>
+          <tr>
+            <th>Current time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{seconds}}</td>
+          </tr>
+        </tbody>
+      </table>
     <table>
       <thead>
         <tr>
@@ -54,64 +68,67 @@
       </tbody>
     </table>
     <br/>
+    </aside>
     
-    
+    <section>
     <table>
       <thead>
         <tr>
-          <td>patient comes in</td>
-          <td>patient fills the paperwork</td>
-          <td>paperwork filled</td>
-          <td>paperwork processed by nurse finished</td>
-          <td>patients waiting in emergency room</td>
-          <td>patients under treatment</td>
-          <td>patients is healed waiting for checkout</td>
+          <th>patient comes in</th>
+          <th>patient fills the paperwork</th>
+          <th>paperwork filled</th>
+          <th>paperwork processed by nurse finished</th>
+          <th>patients waiting in emergency room</th>
+          <th>patients under treatment</th>
+          <th>patients is healed waiting for checkout</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td>
             <li v-for="item in patientsArrived" :key="item.nameOfClient">
-              {{ item.nameOfClient }}
+              {{ item.nameOfClient }}-[{{item.minTime}},{{item.maxTime}}]
             </li>
           </td>
           <td>
             <li v-for="item in paperworkToFill" :key="item.nameOfClient">
-              {{ item.nameOfClient }}
+              {{ item.nameOfClient }}-[{{item.minTime}},{{item.maxTime}}]
             </li>
           </td>
           <td>
             <li v-for="item in paperworkFilled" :key="item.nameOfClient">
-              {{ item.nameOfClient }}
+              {{ item.nameOfClient }}-[{{item.minTime}},{{item.maxTime}}]
             </li>
           </td>
           <td>
             <li v-for="item in paperworkProcessFinished" :key="item.nameOfClient">
-              {{ item.nameOfClient }}
+              {{ item.nameOfClient }}-[{{item.minTime}},{{item.maxTime}}]
             </li>
           </td>
           <td>
             <li v-for="item in patientsWaitingInEmergencyRoom" :key="item.nameOfClient">
-              {{ item.nameOfClient }}
+              {{ item.nameOfClient }}-[{{item.minTime}},{{item.maxTime}}]
             </li>
           </td>
           <td>
             <li v-for="item in patientsUnderTreatment" :key="item.nameOfClient">
-              {{ item.nameOfClient }}
+              {{ item.nameOfClient }}-[{{item.minTime}},{{item.maxTime}}]
             </li>
           </td>
           <td>
             <li v-for="item in patientsHealed" :key="item.nameOfClient">
-              {{ item.nameOfClient }}
+              {{ item.nameOfClient }}-[{{item.minTime}},{{item.maxTime}}]
             </li>
           </td>
         </tr>
       </tbody>
     </table>
-    
-    <br/>
-    <br/>
-    <br/>
+    </section>
+    <aside>
+    <h3>Automatic</h3>
+    <button v-on:click="launchAutonomousSystem">Launch system</button>
+    </aside>
+    <h3>Manual</h3>
     <table>
       <thead>
         <tr>
@@ -165,56 +182,54 @@
     <br/>
     <table>
       <thead>
+        <tr>
+          <th colspan="2">Request and offer rooms</th>
+        </tr>
       </thead>
       <tbody>
         <tr>
-          <table>
-            <thead>
-              <tr>
-                <th colspan="2">Request and offer rooms</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><button v-on:click="requestForARoom">Request for a room</button></td>
-                <td><button v-on:click="offersARoom">Offers a room</button></td>
-              </tr>
-              <tr>
-                <td><button v-on:click="outsideAsksForARoom">Outside asks for a room</button></td>
-                <td><button v-on:click="outsideOffersARoom">Outside offers a room</button></td>
-              </tr>
-            </tbody>
-          </table>
+          <td><button v-on:click="requestForARoom">Request for a room</button></td>
+          <td><button v-on:click="offersARoom">Offers a room</button></td>
         </tr>
         <tr>
-          
-          <table>
-            <thead>
-              <tr>
-                <th colspan="2">Request and offer physician</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><button v-on:click="requestFormAPhysician">Request for a physician</button></td>
-                <td><button v-on:click="offersAPhysician">Offers a physician</button></td>
-              </tr>
-              <tr>
-                <td><button v-on:click="outsideAsksForAPhysician">Outside asks for a physician</button></td>
-                <td><button v-on:click="outsideOffersAPhysician">Outside offers a physician</button></td>
-              </tr>
-            </tbody>
-          </table>
+          <td><button v-on:click="outsideAsksForARoom">Outside asks for a room</button></td>
+          <td><button v-on:click="outsideOffersARoom">Outside offers a room</button></td>
         </tr>
       </tbody>
     </table>
-      
-
-    
-    
-    
-    
-    
+    <br/>
+    <table>
+      <thead>
+        <tr>
+          <th colspan="2">Request and offer physician</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><button v-on:click="requestFormAPhysician">Request for a physician</button></td>
+          <td><button v-on:click="offersAPhysician">Offers a physician</button></td>
+        </tr>
+        <tr>
+          <td><button v-on:click="outsideAsksForAPhysician">Outside asks for a physician</button></td>
+          <td><button v-on:click="outsideOffersAPhysician">Outside offers a physician</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <br/>
+    <table>
+      <thead>
+        <tr>
+          <th colspan="2">Reject outside requests</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><button v-on:click="rejectDemandForRoom">Reject demand for a room</button></td>
+          <td><button v-on:click="rejectDemandForPhysician">Reject demand for a physician</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <!--
     <button v-on:click="patientComesIn">Patients comes in</button>
     <button v-on:click="patientRefused(clientToRefuse)">Patient refused</button>
     <button v-on:click="acceptPatient(clientToRefuse)">Accept patient</button>
@@ -228,15 +243,11 @@
     <button v-on:click="offersARoom">Offers a room</button>
     <button v-on:click="outsideAsksForARoom">Outside asks for a room</button>
     <button v-on:click="outsideOffersARoom">Outside offers a room</button>
-    <button v-on:click="rejectDemandForRoom">Reject demand for a room</button>
-    
-    
-    
-    
     <button v-on:click="rejectDemandForPhysician">Reject demand for a physician</button>
     <br/>
     <button v-on:click="addASecond">Add a second</button>
-    <button v-on:click="launchAutonomousSystem">Launch system</button>
+    -->
+    
   </div>
 </template>
 
@@ -245,6 +256,7 @@ export default {
   name: 'clinic',
   data: function () {
     return {
+      seconds:0,
       patientsArrived: [],
       paperworkToFill: [],
       paperworkFilled: [],
@@ -267,7 +279,7 @@ export default {
   },
   methods: {
     patientComesIn: function () {
-      const names = ["Charlotte","Claire","Pascal","Lucas","Ludovic","Marion","Yves","Kyle","Hugo","Gaël","Kate"]
+      const names = ["Claire","Pascal","Lucas","Ludo","Mario","Yves","Kyle","Hugo","Gaël","Kate","Lucie","Théa","Mia","Lou","Zoé","Eva","Nina"]
       var name = names[Math.floor(Math.random() * names.length)].concat("(",this.totalPatientsWelcomed,")")
       var newClient = new Step(name, 0, 15, this.totalPatientsWelcomed)
       this.totalPatientsWelcomed++
@@ -444,6 +456,7 @@ export default {
       }
     },
     addASecond: function () {
+      this.seconds++
       // For each list, add a second on all the Step elements in all the lists, if the maximum time reached 0,
       // the default action is executed
       this.addSecondOnPatientArrived()
@@ -616,7 +629,10 @@ class Step {
   display: inline-block;
   padding-right: 5px;
 }
-
+aside {
+  padding-left:1%;
+  float: right;
+}
 table,
 td {
     border: 1px solid rgba(0, 0, 0, 0.431);
