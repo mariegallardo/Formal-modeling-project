@@ -54,6 +54,19 @@
       <table>
         <thead>
           <tr>
+            <th>total patients before treatment</th>
+            </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{totalPatientsBeforeTreatment}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <br/>
+      <table>
+        <thead>
+          <tr>
             <th>global stats</th> 
           </tr>
         </thead>
@@ -131,7 +144,7 @@
     <table>
       <thead>
         <tr>
-          <td class="minWidth">Messages asking for a room</td>
+          <th class="minWidth">Messages asking for a room</th>
         </tr>
       </thead>
       <tbody>
@@ -148,7 +161,7 @@
     <table>
       <thead>
         <tr>
-          <td class="minWidth">Messages asking for a physicians</td>
+          <th class="minWidth">Messages asking for a physicians</th>
         </tr>
       </thead>
       <tbody>
