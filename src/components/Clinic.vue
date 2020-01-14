@@ -31,43 +31,42 @@
           </tr>
         </tbody>
       </table>
-    <table>
-      <thead>
-        <tr>
-          <th>current resources</th>
-        </tr>
-        
-      </thead>
-      <tbody>
-        <tr>
-          <td>Number of available nurses:{{nursesAvailable}}</td>
-        </tr>
-        <tr>
-          <td>Number of available physician:{{physiciansAvailable}}</td>
-        </tr>
-        <tr>
-          <td>Number of available rooms:{{roomsAvailable}}</td>
-        </tr>
-      </tbody>
-      
-    </table>
-    <br/>
-    <table>
-      <thead>
-        <tr>
-           <th>global stats</th> 
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Number of patient welcomed:{{totalPatientsWelcomed}}</td>
-        </tr>
-        <tr>
-          <td>Total number of patient healed:{{totalPatientsHealed}}</td>
-        </tr>
-      </tbody>
-    </table>
-    <br/>
+      <br/>
+      <table>
+        <thead>
+          <tr>
+            <th>current resources</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Number of available nurses:{{nursesAvailable}}</td>
+          </tr>
+          <tr>
+            <td>Number of available physician:{{physiciansAvailable}}</td>
+          </tr>
+          <tr>
+            <td>Number of available rooms:{{roomsAvailable}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <br/>
+      <table>
+        <thead>
+          <tr>
+            <th>global stats</th> 
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Number of patient welcomed:{{totalPatientsWelcomed}}</td>
+          </tr>
+          <tr>
+            <td>Total number of patient healed:{{totalPatientsHealed}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <br/>
     </aside>
     
     <section>
@@ -128,6 +127,41 @@
     <h3>Automatic</h3>
     <button v-on:click="launchAutonomousSystem">Launch system</button>
     </aside>
+    <br/>
+    <table>
+      <thead>
+        <tr>
+          <td class="minWidth">Messages asking for a room</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <li v-for="item in messagesAskingForRoom" :key="item.isItFromYourService">
+              room request <div v-if="item.isItFromYourService===true">from your service</div> {{item.timeWaited}} s ago
+            </li>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br/>
+    <table>
+      <thead>
+        <tr>
+          <td class="minWidth">Messages asking for a physicians</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <li v-for="item in messagesAskingForPhysicians" :key="item.isItFromYourService">
+              physician request <div v-if="item.isItFromYourService===true">from your service</div> {{item.timeWaited}} s ago
+            </li>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br/>
     <h3>Manual</h3>
     <table>
       <thead>
@@ -180,10 +214,11 @@
       </tbody>
     </table>
     <br/>
+    Messages
     <table>
       <thead>
         <tr>
-          <th colspan="2">Request and offer rooms</th>
+          <th colspan="2">Inside</th>
         </tr>
       </thead>
       <tbody>
@@ -192,8 +227,9 @@
           <td><button v-on:click="offersARoom">Offers a room</button></td>
         </tr>
         <tr>
-          <td><button v-on:click="outsideAsksForARoom">Outside asks for a room</button></td>
-          <td><button v-on:click="outsideOffersARoom">Outside offers a room</button></td>
+          <td><button v-on:click="requestFormAPhysician">Request for a physician</button></td>
+          <td><button v-on:click="offersAPhysician">Offers a physician</button></td>
+          
         </tr>
       </tbody>
     </table>
@@ -201,13 +237,13 @@
     <table>
       <thead>
         <tr>
-          <th colspan="2">Request and offer physician</th>
+          <th colspan="2">Outside</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><button v-on:click="requestFormAPhysician">Request for a physician</button></td>
-          <td><button v-on:click="offersAPhysician">Offers a physician</button></td>
+          <td><button v-on:click="outsideAsksForARoom">Outside asks for a room</button></td>
+          <td><button v-on:click="outsideOffersARoom">Outside offers a room</button></td>
         </tr>
         <tr>
           <td><button v-on:click="outsideAsksForAPhysician">Outside asks for a physician</button></td>
@@ -641,5 +677,9 @@ thead,
 tfoot {
     background-color: rgba(4, 251, 37, 0.294);
     color: rgb(0, 0, 0);
+}
+
+#minWidth{
+  min-width:100px;
 }
 </style>
