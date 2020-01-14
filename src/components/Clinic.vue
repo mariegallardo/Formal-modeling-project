@@ -1,6 +1,6 @@
 <template>
   <div>
-    
+    <!--
     <h3 class="displayInfo">Number of available nurses : {{nursesAvailable}} &nbsp;</h3>
     <h3 class="displayInfo">Number of available physician : {{physiciansAvailable}} &nbsp;-</h3>
     <h3 class="displayInfo">Number of available roomsAvailable : {{roomsAvailable}} &nbsp;-</h3>
@@ -15,84 +15,211 @@
     <h3 class="displayInfo">Number of requests for a physician: {{messagesAskingForPhysicians}} &nbsp;-</h3>
     <h3 class="displayInfo">Total patients under treatment: {{totalPatientsBeforeTreatment}} &nbsp;-</h3>
     <br/>
+    -->
     
-
-    <p>Number of available nurses:{{nursesAvailable}}</p>
-    <p>Number of available physician:{{physiciansAvailable}}</p>
-    <p>Number of available rooms:{{roomsAvailable}}</p>
     <table>
-      <tr>
-        <td>patient comes in</td>
-        <td>patient fills the paperwork</td>
-        <td>paperwork filled</td>
-        <td>paperwork processed by nurse finished</td>
-        <td>patients waiting in emergency room</td>
-        <td>patients under treatment</td>
-        <td>patients is healed</td>
-      </tr>
-      <tr>
-        <td>
-          <li v-for="item in patientsArrived" :key="item.nameOfClient">
-            {{ item.nameOfClient }}
-          </li>
-        </td>
-        <td>
-          <li v-for="item in paperworkToFill" :key="item.nameOfClient">
-            {{ item.nameOfClient }}
-          </li>
-        </td>
-        <td>
-          <li v-for="item in paperworkFilled" :key="item.nameOfClient">
-            {{ item.nameOfClient }}
-          </li>
-        </td>
-        <td>
-          <li v-for="item in paperworkProcessFinished" :key="item.nameOfClient">
-            {{ item.nameOfClient }}
-          </li>
-        </td>
-        <td>
-          <li v-for="item in patientsWaitingInEmergencyRoom" :key="item.nameOfClient">
-            {{ item.nameOfClient }}
-          </li>
-        </td>
-        <td>
-          <li v-for="item in patientsUnderTreatment" :key="item.nameOfClient">
-            {{ item.nameOfClient }}
-          </li>
-        </td>
-        <td>
-          <li v-for="item in patientsHealed" :key="item.nameOfClient">
-            {{ item.nameOfClient }}
-          </li>
-        </td>
-      </tr>
+      <thead>
+        <tr>
+          <th>current resources</th>
+        </tr>
+        
+      </thead>
+      <tbody>
+        <tr>
+          <td>Number of available nurses:{{nursesAvailable}}</td>
+        </tr>
+        <tr>
+          <td>Number of available physician:{{physiciansAvailable}}</td>
+        </tr>
+        <tr>
+          <td>Number of available rooms:{{roomsAvailable}}</td>
+        </tr>
+      </tbody>
+      
+    </table>
+    <br/>
+    <table>
+      <thead>
+        <tr>
+           <th>global stats</th> 
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Number of patient welcomed:{{totalPatientsWelcomed}}</td>
+        </tr>
+        <tr>
+          <td>Total number of patient healed:{{totalPatientsHealed}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <br/>
+    
+    
+    <table>
+      <thead>
+        <tr>
+          <td>patient comes in</td>
+          <td>patient fills the paperwork</td>
+          <td>paperwork filled</td>
+          <td>paperwork processed by nurse finished</td>
+          <td>patients waiting in emergency room</td>
+          <td>patients under treatment</td>
+          <td>patients is healed waiting for checkout</td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <li v-for="item in patientsArrived" :key="item.nameOfClient">
+              {{ item.nameOfClient }}
+            </li>
+          </td>
+          <td>
+            <li v-for="item in paperworkToFill" :key="item.nameOfClient">
+              {{ item.nameOfClient }}
+            </li>
+          </td>
+          <td>
+            <li v-for="item in paperworkFilled" :key="item.nameOfClient">
+              {{ item.nameOfClient }}
+            </li>
+          </td>
+          <td>
+            <li v-for="item in paperworkProcessFinished" :key="item.nameOfClient">
+              {{ item.nameOfClient }}
+            </li>
+          </td>
+          <td>
+            <li v-for="item in patientsWaitingInEmergencyRoom" :key="item.nameOfClient">
+              {{ item.nameOfClient }}
+            </li>
+          </td>
+          <td>
+            <li v-for="item in patientsUnderTreatment" :key="item.nameOfClient">
+              {{ item.nameOfClient }}
+            </li>
+          </td>
+          <td>
+            <li v-for="item in patientsHealed" :key="item.nameOfClient">
+              {{ item.nameOfClient }}
+            </li>
+          </td>
+        </tr>
+      </tbody>
     </table>
     
     <br/>
-    patient id:
-    <input v-model="clientToRefuse">
     <br/>
     <br/>
-    <button v-on:click="patientComesIn">Patients comes in</button>
-    <button v-on:click="patientRefused(clientToRefuse)">Patient refused</button>
-    <button v-on:click="acceptPatient(clientToRefuse)">Accept patient</button>
-    <button v-on:click="fillsPaperwork(clientToRefuse)">Fills paperwork</button>
-    <button v-on:click="processPaperwork(clientToRefuse)">Process paperwork</button>
-    <button v-on:click="goesInEmergencyRoom(clientToRefuse)">Goes in emergency room</button>
-    <button v-on:click="startTreatment(clientToRefuse)">Start treatment</button>
-    <button v-on:click="treatmentFinished(clientToRefuse)">Treatment finished</button>
-    <button v-on:click="patientChecksOut(clientToRefuse)">Patient checks out</button>
-    <button v-on:click="addASecond">Add a second</button>
-    <button v-on:click="requestForARoom">Request for a room</button>
-    <button v-on:click="offersARoom">Offers a room</button>
-    <button v-on:click="outsideAsksForARoom">Outside asks for a room</button>
-    <button v-on:click="outsideOffersARoom">Outside offers a room</button>
+    <table>
+      <thead>
+        <tr>
+          <th>change time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><button v-on:click="addASecond">Add a second</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <br/>
+    <table>
+      <thead>
+        <tr>
+          <th colspan="2">Processes of taking care of the patient</th>
+        </tr>
+      </thead>
+      <tbody> 
+        <tr>
+          <td><button v-on:click="patientComesIn">Patients comes in</button></td>
+        </tr>
+        <tr>
+          patient id:<input v-model="clientToRefuse">
+        </tr>
+        <tr>
+          <td><button v-on:click="acceptPatient(clientToRefuse)">Accept patient</button></td>
+          <td><button v-on:click="patientRefused(clientToRefuse)">Refuse patient</button></td>
+        </tr>
+        <tr>
+          <td><button v-on:click="fillsPaperwork(clientToRefuse)">Fills paperwork</button></td>
+        </tr>
+        <tr>
+          <td><button v-on:click="processPaperwork(clientToRefuse)">Process paperwork</button></td>
+        </tr>
+        <tr>
+          <td><button v-on:click="goesInEmergencyRoom(clientToRefuse)">Goes in emergency room</button></td>
+        </tr>
+        <tr>
+          <td><button v-on:click="startTreatment(clientToRefuse)">Start treatment</button></td>
+        </tr>
+        <tr>
+          <td><button v-on:click="treatmentFinished(clientToRefuse)">Treatment finished</button></td>
+        </tr>
+        <tr>
+          <td><button v-on:click="patientChecksOut(clientToRefuse)">Patient checks out</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <br/>
+    <table>
+      <thead>
+      </thead>
+      <tbody>
+        <tr>
+          <table>
+            <thead>
+              <tr>
+                <th colspan="2">Request and offer rooms</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><button v-on:click="requestForARoom">Request for a room</button></td>
+                <td><button v-on:click="offersARoom">Offers a room</button></td>
+              </tr>
+              <tr>
+                <td><button v-on:click="outsideAsksForARoom">Outside asks for a room</button></td>
+                <td><button v-on:click="outsideOffersARoom">Outside offers a room</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </tr>
+        <tr>
+          
+          <table>
+            <thead>
+              <tr>
+                <th colspan="2">Request and offer physician</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><button v-on:click="requestFormAPhysician">Request for a physician</button></td>
+                <td><button v-on:click="offersAPhysician">Offers a physician</button></td>
+              </tr>
+              <tr>
+                <td><button v-on:click="outsideAsksForAPhysician">Outside asks for a physician</button></td>
+                <td><button v-on:click="outsideOffersAPhysician">Outside offers a physician</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </tr>
+      </tbody>
+    </table>
+      
+
+    
+    
+    
+    
+    
     <button v-on:click="rejectDemandForRoom">Reject demand for a room</button>
-    <button v-on:click="requestFormAPhysician">Request for a physician</button>
-    <button v-on:click="offersAPhysician">Offers a physician</button>
-    <button v-on:click="outsideAsksForAPhysician">Outside asks for a physician</button>
-    <button v-on:click="outsideOffersAPhysician">Outside offers a physician</button>
+    
+    
+    
+    
     <button v-on:click="rejectDemandForPhysician">Reject demand for a physician</button>
   </div>
 </template>
@@ -102,7 +229,6 @@ export default {
   name: 'clinic',
   data: function () {
     return {
-      columns:["reception"],
       patientsArrived: [],
       paperworkToFill: [],
       paperworkFilled: [],
@@ -116,12 +242,13 @@ export default {
       messagesAskingForRoom: [],
       messagesAskingForPhysicians: [],
       totalPatientsBeforeTreatment: 0,
-      totalPatientsWelcomed: 0
+      totalPatientsWelcomed: 0,
+      totalPatientsHealed:0
     }
   },
   methods: {
     patientComesIn: function () {
-      const names = ["charlotte","claire","pascal","lucas"]
+      const names = ["Charlotte","Claire","Pascal","Lucas","Ludovic","Marion","Yves","Kyle","Hugo","Gaël","Kate"]
       var name = names[Math.floor(Math.random() * names.length)].concat("(",this.totalPatientsWelcomed,")")
       var newClient = new Step(name, 0, 15, this.totalPatientsWelcomed)
       this.totalPatientsWelcomed++
@@ -214,6 +341,7 @@ export default {
         this.patientsUnderTreatment.splice(i, 1)
         this.physiciansAvailable++
         this.roomsAvailable++
+        this.totalPatientsHealed++
         this.patientsHealed.push(patient)
       }
     },
@@ -415,6 +543,11 @@ class Step {
 
 table,
 td {
-    border: 1px solid #333;
+    border: 1px solid rgba(0, 0, 0, 0.431);
+}
+thead,
+tfoot {
+    background-color: rgba(4, 251, 37, 0.294);
+    color: rgb(0, 0, 0);
 }
 </style>
