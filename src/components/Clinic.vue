@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!--
     <h3 class="displayInfo">Number of available nurses : {{nursesAvailable}} &nbsp;</h3>
     <h3 class="displayInfo">Number of available physician : {{physiciansAvailable}} &nbsp;-</h3>
     <h3 class="displayInfo">Number of available roomsAvailable : {{roomsAvailable}} &nbsp;-</h3>
@@ -15,7 +14,6 @@
     <h3 class="displayInfo">Number of requests for a physician: {{messagesAskingForPhysicians}} &nbsp;-</h3>
     <h3 class="displayInfo">Total patients under treatment: {{totalPatientsBeforeTreatment}} &nbsp;-</h3>
     <br/>
-    -->
 
     <p>Number of available nurses:{{nursesAvailable}}</p>
     <p>Number of available physician:{{physiciansAvailable}}</p>
@@ -83,7 +81,6 @@
     <button v-on:click="startTreatment(clientToRefuse)">Start treatment</button>
     <button v-on:click="treatmentFinished(clientToRefuse)">Treatment finished</button>
     <button v-on:click="patientChecksOut(clientToRefuse)">Patient checks out</button>
-    <button v-on:click="addASecond">Add a second</button>
     <button v-on:click="requestForARoom">Request for a room</button>
     <button v-on:click="offersARoom">Offers a room</button>
     <button v-on:click="outsideAsksForARoom">Outside asks for a room</button>
@@ -94,6 +91,9 @@
     <button v-on:click="outsideAsksForAPhysician">Outside asks for a physician</button>
     <button v-on:click="outsideOffersAPhysician">Outside offers a physician</button>
     <button v-on:click="rejectDemandForPhysician">Reject demand for a physician</button>
+    <br/>
+    <button v-on:click="addASecond">Add a second</button>
+    <button v-on:click="launchAutonomousSystem">Launch system</button>
   </div>
 </template>
 
@@ -116,7 +116,10 @@ export default {
       messagesAskingForRoom: [],
       messagesAskingForPhysicians: [],
       totalPatientsBeforeTreatment: 0,
-      totalPatientsWelcomed: 0
+      totalPatientsWelcomed: 0,
+      clientToRefuse: -1,
+      youRequestedARoom: false,
+      youRequestedAPhysician: false
     }
   },
   methods: {
@@ -238,7 +241,7 @@ export default {
         continue;
       }
       
-      if (i < this.messagesAskingForRoom.length && this.roomsAvailable > 0) {
+      if (i < this.messagesAskingForRoom.length && this.roomsAvailable > 1) {
         this.messagesAskingForRoom.splice(i, 1)
         this.roomsAvailable--
       }
@@ -256,6 +259,7 @@ export default {
       if (this.messagesAskingForRoom.length > 0) {
         if (this.messagesAskingForRoom[0].isItFromYourService) {
           this.roomsAvailable++
+          this.youRequestedARoom = false
         }
         this.messagesAskingForRoom.splice(0, 1)
       }
@@ -272,7 +276,7 @@ export default {
         continue;
       }
       
-      if (i < this.messagesAskingForPhysicians.length && this.physiciansAvailable > 0) {
+      if (i < this.messagesAskingForPhysicians.length && this.physiciansAvailable > 1) {
         this.messagesAskingForPhysicians.splice(i, 1)
         this.physiciansAvailable--
       }
@@ -290,6 +294,7 @@ export default {
       if (this.messagesAskingForPhysicians.length > 0) {
         if (this.messagesAskingForPhysicians[0].isItFromYourService) {
           this.physiciansAvailable++
+          this.youRequestedAPhysician = false
         }
         this.messagesAskingForPhysicians.splice(0, 1)
       }
@@ -307,14 +312,15 @@ export default {
     },
     addSecondOnPatientArrived: function () {
       this.patientsArrived.forEach(element => {
-        /* eslint-disable no-console */
-        console.log(element.minDuration.type)
-        console.log(Math.max(0, element.minDuration - 1))
-        element.minDuration = Math.max(0, element.minDuration - 1)
-        element.maxDuration = Math.max(0, element.maxDuration - 1)
-        console.log(element)
+        element.minTime = Math.max(0, element.minTime - 1)
+        element.maxTime = Math.max(0, element.maxTime - 1)
         
-        if (element.maxDuration === 0){
+        if (element.maxTime === 0){
+          if(!this.acceptPatient(element.id)){
+            this.patientRefused(element.id)
+          }
+        }
+        else if (element.minTime === 0 && Math.round(Math.random()) === 1) {
           if(!this.acceptPatient(element.id)){
             this.patientRefused(element.id)
           }
@@ -323,37 +329,43 @@ export default {
     },
     addSecondOnFillsPapework: function () {
       this.paperworkToFill.forEach(element => {
-        element.minDuration = Math.max(0, element.minDuration - 1)
-        element.maxDuration = Math.max(0, element.maxDuration - 1)
+        element.minTime = Math.max(0, element.minTime - 1)
+        element.maxTime = Math.max(0, element.maxTime - 1)
         
-        if (element.maxDuration === 0){
+        if (element.maxTime === 0){
+          this.fillsPaperwork(element.id)
+        }
+        else if (element.minTime === 0 && Math.round(Math.random()) === 1) {
           this.fillsPaperwork(element.id)
         }
       })
     },
     addSecondOnProcessPaperwork: function () {
       var nurses = this.nursesAvailable
-      this.paperworkToFill.forEach(element => {
+      this.paperworkFilled.forEach(element => {
         if (nurses > 0) {
-          element.minDuration = Math.max(0, element.minDuration - 1)
-          element.maxDuration = Math.max(0, element.maxDuration - 1)
+          element.minTime = Math.max(0, element.minTime - 1)
+          element.maxTime = Math.max(0, element.maxTime - 1)
           nurses--
         }
         
-        if (element.maxDuration === 0) {
-          this.fillsPaperwork(element.id)
+        if (element.maxTime === 0) {
+          this.processPaperwork(element.id)
+        }
+        else if (element.minTime === 0 && Math.round(Math.random()) === 1) {
+          this.processPaperwork(element.id)
         }
       })
     },
     addSecondOnGoesInEmergency: function () {
-      this.paperworkToFill.forEach(element => {
+      this.paperworkProcessFinished.forEach(element => {
         if (this.roomsAvailable > 0) {
           this.goesInEmergencyRoom(element.id)
         }
       })
     },
     addSecondOnStartTreatment: function () {
-      this.paperworkToFill.forEach(element => {
+      this.patientsWaitingInEmergencyRoom.forEach(element => {
         if (this.physiciansAvailable > 0) {
           this.startTreatment(element.id)
         }
@@ -361,23 +373,72 @@ export default {
     },
     addSecondOnProceedTreatment: function () {
       this.patientsUnderTreatment.forEach(element => {
-        element.minDuration = Math.max(0, element.minDuration - 1)
-        element.maxDuration = Math.max(0, element.maxDuration - 1)
+        element.minTime = Math.max(0, element.minTime - 1)
+        element.maxTime = Math.max(0, element.maxTime - 1)
         
-        if (element.maxDuration === 0){
+        if (element.maxTime === 0){
+          this.treatmentFinished(element.id)
+        }
+        else if (element.minTime === 0 && Math.round(Math.random() * 4) === 1) {
           this.treatmentFinished(element.id)
         }
       })
     },
     addSecondOnChecksOut: function () {
       this.patientsHealed.forEach(element => {
-        element.minDuration = Math.max(0, element.minDuration - 1)
-        element.maxDuration = Math.max(0, element.maxDuration - 1)
+        element.minTime = Math.max(0, element.minTime - 1)
+        element.maxTime = Math.max(0, element.maxTime - 1)
         
-        if (element.maxDuration === 0){
+        if (element.maxTime === 0){
+          this.patientChecksOut(element.id)
+        }
+        else if (element.minTime === 0 && Math.round(Math.random()) === 1) {
           this.patientChecksOut(element.id)
         }
       })
+    },
+    launchAutonomousSystem: function () {
+      /* eslint-disable no-console */
+      if (this.totalPatientsBeforeTreatment === 0) {
+        this.offersARoom()
+        this.offersAPhysician()
+      }
+
+      if (!this.youRequestedARoom &&
+        this.paperworkProcessFinished.length - this.roomsAvailable >= 3) {
+        this.requestForARoom()
+        this.youRequestedARoom = true
+      }
+
+      if (!this.youRequestedAPhysician &&
+        this.patientsWaitingInEmergencyRoom.length - this.physiciansAvailable >= 3) {
+        this.requestFormAPhysician()
+        this.youRequestedAPhysician = true
+      }
+
+      if (Math.round(Math.random() * 5) === 1) {
+        this.patientComesIn()
+      }
+      
+      if (Math.round(Math.random() * 20) === 1) {
+        this.outsideAsksForARoom()
+      }
+      
+      if (Math.round(Math.random() * 20) === 1) {
+        this.outsideAsksForAPhysician()
+      }
+      
+      if (this.messagesAskingForRoom.length > 1 && Math.round(Math.random() * 10) === 1) {
+        this.outsideOffersARoom()
+      }
+      
+      if (this.messagesAskingForPhysicians.length > 1 && Math.round(Math.random() * 10) === 1) {
+        this.outsideOffersAPhysician()
+      }
+
+      this.addASecond()
+      
+      setTimeout(this.launchAutonomousSystem, 500)
     }
   }
 }
@@ -398,10 +459,10 @@ class RequestForPhysician {
 
 
 class Step {
-  constructor(nameOfClient, minDuration, maxDuration, id){
+  constructor(nameOfClient, minTime, maxTime, id){
     this.nameOfClient = nameOfClient
-    this.maxTime = maxDuration
-    this.minTime = minDuration
+    this.maxTime = maxTime
+    this.minTime = minTime
     this.id = id
   }
 }
