@@ -162,58 +162,76 @@ export default {
     },
     // The observed service asks for a room
     requestForARoom: function () {
-      this.messagesAskingForRoom++
+      var newRequest = new RequestForRoom(true, 0)
+      this.messagesAskingForRoom.push(newRequest)
     },
     // The observed service offers for a room
     offersARoom: function () {
-      if (this.messagesAskingForRoom > 0 && this.roomsAvailable > 0) {
-        this.messagesAskingForRoom--
+      for (var i = 0; i < this.messagesAskingForRoom.length &&
+        this.messagesAskingForRoom[i].isItFromYourService; i++){
+        continue;
+      }
+      
+      if (i < this.messagesAskingForRoom.length && this.roomsAvailable > 0) {
+        this.messagesAskingForRoom.splice(i, 1)
         this.roomsAvailable--
       }
     },
     rejectDemandForRoom: function () {
-      if (this.messagesAskingForRoom > 0) {
-        this.messagesAskingForRoom--
+      if (this.messagesAskingForRoom.length > 0) {
+        this.messagesAskingForRoom.splice(0, 1)
       }
     },
     outsideAsksForARoom: function () {
-      this.messagesAskingForRoom++
+      var newRequest = new RequestForRoom(false, 0)
+      this.messagesAskingForRoom.push(newRequest)
     },
     outsideOffersARoom: function () {
-      if (this.messagesAskingForRoom > 0) {
-        this.messagesAskingForRoom--
-        this.roomsAvailable++
+      if (this.messagesAskingForRoom.length > 0) {
+        if (this.messagesAskingForRoom[0].isItFromYourService) {
+          this.roomsAvailable++
+        }
+        this.messagesAskingForRoom.splice(0, 1)
       }
     },
     // The observed service asks for a physician
     requestFormAPhysician: function () {
-      this.messagesAskingForPhysicians++
+      var newRequest = new RequestForPhysician(true, 0)
+      this.messagesAskingForPhysicians.push(newRequest)
     },
     // The observed service offers for a physician
     offersAPhysician: function () {
-      if (this.messagesAskingForPhysicians > 0 && this.physiciansAvailable > 0) {
-        this.messagesAskingForPhysicians--
+      for (var i = 0; i < this.messagesAskingForPhysicians.length &&
+        this.messagesAskingForPhysicians[i].isItFromYourService; i++){
+        continue;
+      }
+      
+      if (i < this.messagesAskingForPhysicians.length && this.physiciansAvailable > 0) {
+        this.messagesAskingForPhysicians.splice(i, 1)
         this.physiciansAvailable--
       }
     },
     rejectDemandForPhysician: function () {
-      if (this.messagesAskingForPhysicians > 0) {
-        this.messagesAskingForPhysicians--
+      if (this.messagesAskingForPhysicians.length > 0) {
+        this.messagesAskingForPhysicians.splice(0, 1)
       }
     },
     outsideAsksForAPhysician: function () {
-      this.messagesAskingForPhysicians++
+      var newRequest = new RequestForPhysician(false, 0)
+      this.messagesAskingForPhysicians.push(newRequest)
     },
     outsideOffersAPhysician: function () {
-      if (this.messagesAskingForPhysicians > 0) {
-        this.messagesAskingForPhysicians--
-        this.physiciansAvailable++
+      if (this.messagesAskingForPhysicians.length > 0) {
+        if (this.messagesAskingForPhysicians[0].isItFromYourService) {
+          this.physiciansAvailable++
+        }
+        this.messagesAskingForPhysicians.splice(0, 1)
       }
     }
   }
 }
 
-/*class RequestForRoom {
+class RequestForRoom {
   constructor(isItFromYourService, timeWaited){
     this.isItFromYourService = isItFromYourService
     this.timeWaited = timeWaited
@@ -225,7 +243,7 @@ class RequestForPhysician {
     this.isItFromYourService = isItFromYourService
     this.timeWaited = timeWaited
   }
-}*/
+}
 
 
 class Step {
