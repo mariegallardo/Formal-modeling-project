@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!--
     <h3 class="displayInfo">Number of available nurses : {{nursesAvailable}} &nbsp;</h3>
     <h3 class="displayInfo">Number of available physician : {{physiciansAvailable}} &nbsp;-</h3>
     <h3 class="displayInfo">Number of available roomsAvailable : {{roomsAvailable}} &nbsp;-</h3>
@@ -14,8 +15,66 @@
     <h3 class="displayInfo">Number of requests for a physician: {{messagesAskingForPhysicians}} &nbsp;-</h3>
     <h3 class="displayInfo">Total patients under treatment: {{totalPatientsBeforeTreatment}} &nbsp;-</h3>
     <br/>
-    <button v-on:click="patientComesIn">Patients comes in</button>
+    -->
+
+    <p>Number of available nurses:{{nursesAvailable}}</p>
+    <p>Number of available physician:{{physiciansAvailable}}</p>
+    <p>Number of available rooms:{{roomsAvailable}}</p>
+    <table>
+      <tr>
+        <td>patient comes in</td>
+        <td>patient fills paperwork</td>
+        <td>paperwork filled</td>
+        <td>paperwork processed by nurse finished</td>
+        <td>patients waiting in emergency room</td>
+        <td>patients under treatment</td>
+        <td>patients is healed</td>
+      </tr>
+      <tr>
+        <td>
+          <li v-for="item in patientsArrived" :key="item.nameOfClient">
+            {{ item.nameOfClient }}
+          </li>
+        </td>
+        <td>
+          <li v-for="item in paperworkToFill" :key="item.nameOfClient">
+            {{ item.nameOfClient }}
+          </li>
+        </td>
+        <td>
+          <li v-for="item in paperworkFilled" :key="item.nameOfClient">
+            {{ item.nameOfClient }}
+          </li>
+        </td>
+        <td>
+          <li v-for="item in paperworkProcessFinished" :key="item.nameOfClient">
+            {{ item.nameOfClient }}
+          </li>
+        </td>
+        <td>
+          <li v-for="item in patientsWaitingInEmergencyRoom" :key="item.nameOfClient">
+            {{ item.nameOfClient }}
+          </li>
+        </td>
+        <td>
+          <li v-for="item in patientsUnderTreatment" :key="item.nameOfClient">
+            {{ item.nameOfClient }}
+          </li>
+        </td>
+        <td>
+          <li v-for="item in patientsHealed" :key="item.nameOfClient">
+            {{ item.nameOfClient }}
+          </li>
+        </td>
+      </tr>
+    </table>
+    
+    <br/>
+    patient id:
     <input v-model="clientToRefuse">
+    <br/>
+    <br/>
+    <button v-on:click="patientComesIn">Patients comes in</button>
     <button v-on:click="patientRefused(clientToRefuse)">Patient refused</button>
     <button v-on:click="acceptPatient(clientToRefuse)">Accept patient</button>
     <button v-on:click="fillsPaperwork(clientToRefuse)">Fills paperwork</button>
@@ -42,6 +101,7 @@ export default {
   name: 'clinic',
   data: function () {
     return {
+      columns:["reception"],
       patientsArrived: [],
       paperworkToFill: [],
       paperworkFilled: [],
@@ -60,7 +120,9 @@ export default {
   },
   methods: {
     patientComesIn: function () {
-      var newClient = new Step("anonymous", 0, 15, this.totalPatientsWelcomed)
+      const names = ["charlotte","claire","pascal","lucas"]
+      var name = names[Math.floor(Math.random() * names.length)].concat("(",this.totalPatientsWelcomed,")")
+      var newClient = new Step(name, 0, 15, this.totalPatientsWelcomed)
       this.totalPatientsWelcomed++
       this.patientsArrived.push(newClient)
     },
@@ -242,5 +304,10 @@ class Step {
 .displayInfo {
   display: inline-block;
   padding-right: 5px;
+}
+
+table,
+td {
+    border: 1px solid #333;
 }
 </style>
