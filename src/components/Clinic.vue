@@ -310,25 +310,25 @@ export default {
   name: 'clinic',
   data: function () {
     return {
-      minutes:0,
-      patientsArrived: [],
-      paperworkToFill: [],
-      paperworkFilled: [],
-      paperworkProcessFinished: [],
-      patientsWaitingInEmergencyRoom: [],
-      patientsUnderTreatment: [],
-      patientsHealed: [],
-      nursesAvailable: 5,
-      roomsAvailable: 5,
-      totalOfRooms:5,
-      totalOfPhysicians:5,
-      totalOfNurses:5,
-      physiciansAvailable: 5,
-      messagesAskingForRoom: [],
-      messagesAskingForPhysicians: [],
-      totalPatientsBeforeTreatment: 0,
-      totalPatientsWelcomed: 0,
-      totalPatientsHealed:0,
+      minutes:0, // the time counter of the system
+      patientsArrived: [], // the list of patients which comes to the service
+      paperworkToFill: [], // the list of patients which are accepeted and need to fill paperwork
+      paperworkFilled: [], // the list of patients that have filled the paperwork and need to wait a nurse to process the paperwork
+      paperworkProcessFinished: [], // the list of the patients for whom the nurses have processed the paperwork
+      patientsWaitingInEmergencyRoom: [], // the list of the patients that are waiting in an emergency room 
+      patientsUnderTreatment: [], // the list of the patients that are currently treated by a physician in a room
+      patientsHealed: [], // the patient that have been healed and are going to checkout, the physician and the room becomes available when the patient under this step
+      nursesAvailable: 5, // the counter of available nurses
+      roomsAvailable: 5,  // the counter of available rooms
+      physiciansAvailable: 5, // the counter of available physicians
+      totalOfRooms:5, // the total number of rooms in the service, this number changes if the service asks or offers a room
+      totalOfPhysicians:5, // the total number of physicians in the service this number changes if the service if the service asks or offers a physician
+      totalOfNurses:5, // the total number of nurses in the service, this number is a constant
+      totalPatientsBeforeTreatment: 0, // the total number of patients that have been accepted but are waiting to be treated
+      totalPatientsWelcomed: 0, // the total number of patients coming in the service 
+      totalPatientsHealed:0, // the total number of patients that have been healed
+      messagesAskingForRoom: [], // the buffer b0 where the requests for rooms transit
+      messagesAskingForPhysicians: [], // the buffer b1 where the requests for physicians transit
       clientToRefuse: -1,
       youRequestedARoom: false,
       youRequestedAPhysician: false
