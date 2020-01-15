@@ -168,7 +168,7 @@
         <tr>
           <td>
             <li v-for="item in messagesAskingForPhysicians" :key="item.isItFromYourService">
-              physician request <div v-if="item.isItFromYourService===true">from your service</div> {{item.timeWaited}} s ago
+              physician request <div v-if="item.isItFromYourService===true">from your service</div> {{item.timeWaited}} m ago
             </li>
           </td>
         </tr>
@@ -553,12 +553,19 @@ export default {
       this.addMinuteToRequests()
     },
     addMinuteToRequests: function () {
-      this.messagesAskingForRoom.forEach(element => {
-        element.timeWaited++
-      })
-      this.messagesAskingForPhysicians.forEach(element => {
-        element.timeWaited++
-      })
+      for(var i=0; i<this.messagesAskingForRoom.length;i++){
+        this.messagesAskingForRoom[i].timeWaited++
+        if(this.messagesAskingForRoom[i].timeWaited >= 60){
+          this.messagesAskingForRoom.splice(i,1)
+        }
+      }
+      for(i=0; i<this.messagesAskingForPhysicians.length;i++){
+        this.messagesAskingForPhysicians[i].timeWaited++
+        if(this.messagesAskingForPhysicians[i].timeWaited >= 60){
+          this.messagesAskingForPhysicians.splice(i,1)
+        }
+      }
+
 
     },
     addMinuteOnPatientArrived: function () {
