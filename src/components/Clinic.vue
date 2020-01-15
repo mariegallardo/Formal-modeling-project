@@ -27,7 +27,7 @@
         </thead>
         <tbody>
           <tr>
-            <td>{{seconds}}</td>
+            <td>{{minutes}}</td>
           </tr>
         </tbody>
       </table>
@@ -151,7 +151,7 @@
         <tr>
           <td>
             <li v-for="item in messagesAskingForRoom" :key="item.isItFromYourService">
-              room request <div v-if="item.isItFromYourService===true">from your service</div> {{item.timeWaited}} s ago
+              room request <div v-if="item.isItFromYourService===true">from your service</div> {{item.timeWaited}} m ago
             </li>
           </td>
         </tr>
@@ -184,7 +184,7 @@
       </thead>
       <tbody>
         <tr>
-          <td><button v-on:click="addASecond">Add a second</button></td>
+          <td><button v-on:click="addAMinute">Add a minute</button></td>
         </tr>
       </tbody>
     </table>
@@ -227,7 +227,6 @@
       </tbody>
     </table>
     <br/>
-    Messages
     <table>
       <thead>
         <tr>
@@ -240,7 +239,7 @@
           <td><button v-on:click="offersARoom">Offers a room</button></td>
         </tr>
         <tr>
-          <td><button v-on:click="requestFormAPhysician">Request for a physician</button></td>
+          <td><button v-on:click="requestForAPhysician">Request for a physician</button></td>
           <td><button v-on:click="offersAPhysician">Offers a physician</button></td>
           
         </tr>
@@ -294,7 +293,7 @@
     <button v-on:click="outsideOffersARoom">Outside offers a room</button>
     <button v-on:click="rejectDemandForPhysician">Reject demand for a physician</button>
     <br/>
-    <button v-on:click="addASecond">Add a second</button>
+    <button v-on:click="addAMinute">Add a minute</button>
     -->
     
   </div>
@@ -305,7 +304,7 @@ export default {
   name: 'clinic',
   data: function () {
     return {
-      seconds:0,
+      minutes:0,
       patientsArrived: [],
       paperworkToFill: [],
       paperworkFilled: [],
@@ -340,6 +339,9 @@ export default {
       }
       
       if (i < this.patientsArrived.length) {
+        if(this.patientsArrived.minTime > 0){
+          return
+        }
         this.patientsArrived.splice(i, 1)
       }
     },
@@ -353,6 +355,9 @@ export default {
       }
       
       if (i < this.patientsArrived.length) {
+        if(this.patientsArrived.minTime > 0){
+          return
+        }
         var patientWithPaperToFill = new Step(this.patientsArrived[i].nameOfClient, 5, 10, id)
         this.patientsArrived.splice(i, 1)
         this.totalPatientsBeforeTreatment++
@@ -367,18 +372,27 @@ export default {
         continue;
       }
       
+      
       if (i < this.paperworkToFill.length) {
+        if(this.paperworkToFill[i].minTime > 0){
+          return
+        }
         var patientWithPaperToFill = new Step(this.paperworkToFill[i].nameOfClient, 5, 10, id)
         this.paperworkToFill.splice(i, 1)
         this.paperworkFilled.push(patientWithPaperToFill)
       }
     },
     processPaperwork: function (id) {
+      
       for (var i = 0; i < this.paperworkFilled.length && this.paperworkFilled[i].id != id; i++){
         continue;
       }
       
+      
       if (i < this.paperworkFilled.length && this.nursesAvailable > 0) {
+        if(this.paperworkFilled[i].minTime > 0){
+          return
+        }
         var patient = new Step(this.paperworkFilled[i].nameOfClient, 0, 9999, id)
         this.paperworkFilled.splice(i, 1)
         this.nursesAvailable--
@@ -390,7 +404,11 @@ export default {
         continue;
       }
       
+      
       if (i < this.paperworkProcessFinished.length && this.roomsAvailable > 0) {
+        if(this.paperworkProcessFinished[i].minTime > 0){
+          return
+        }
         var patient = new Step(this.paperworkProcessFinished[i].nameOfClient, 0, 99999, id)
         this.paperworkProcessFinished.splice(i, 1)
         this.roomsAvailable--
@@ -403,7 +421,11 @@ export default {
         continue;
       }
       
+      
       if (i < this.patientsWaitingInEmergencyRoom.length && this.physiciansAvailable > 0) {
+        if(this.patientsWaitingInEmergencyRoom[i].minTime > 0){
+          return
+        }
         var patient = new Step(this.patientsWaitingInEmergencyRoom[i].nameOfClient, 20, 90, id)
         this.patientsWaitingInEmergencyRoom.splice(i, 1)
         this.totalPatientsBeforeTreatment--
@@ -416,7 +438,11 @@ export default {
         continue;
       }
       
+      
       if (i < this.patientsUnderTreatment.length) {
+        if(this.patientsUnderTreatment[i].minTime > 0){
+          return
+        }
         var patient = new Step(this.patientsUnderTreatment[i].nameOfClient, 5, 10, id)
         this.patientsUnderTreatment.splice(i, 1)
         this.physiciansAvailable++
@@ -431,6 +457,9 @@ export default {
       }
       
       if (i < this.patientsHealed.length) {
+        if(this.patientsHealed[i].minTime > 0){
+          return
+        }
         this.patientsHealed.splice(i, 1)
       }
     },
@@ -453,6 +482,9 @@ export default {
     },
     rejectDemandForRoom: function () {
       if (this.messagesAskingForRoom.length > 0) {
+        if (this.messagesAskingForRoom[0].isItFromYourService) {
+          this.youRequestedARoom = false
+        }
         this.messagesAskingForRoom.splice(0, 1)
       }
     },
@@ -470,7 +502,7 @@ export default {
       }
     },
     // The observed service asks for a physician
-    requestFormAPhysician: function () {
+    requestForAPhysician: function () {
       var newRequest = new RequestForPhysician(true, 0)
       this.messagesAskingForPhysicians.push(newRequest)
     },
@@ -488,6 +520,9 @@ export default {
     },
     rejectDemandForPhysician: function () {
       if (this.messagesAskingForPhysicians.length > 0) {
+        if (this.messagesAskingForPhysicians[0].isItFromYourService) {
+          this.youRequestedAPhysician = false
+        }
         this.messagesAskingForPhysicians.splice(0, 1)
       }
     },
@@ -504,19 +539,29 @@ export default {
         this.messagesAskingForPhysicians.splice(0, 1)
       }
     },
-    addASecond: function () {
-      this.seconds++
-      // For each list, add a second on all the Step elements in all the lists, if the maximum time reached 0,
+    addAMinute: function () {
+      this.minutes++
+      // For each list, add a minute on all the Step elements in all the lists, if the maximum time reached 0,
       // the default action is executed
-      this.addSecondOnPatientArrived()
-      this.addSecondOnFillsPapework()
-      this.addSecondOnProcessPaperwork()
-      this.addSecondOnGoesInEmergency()
-      this.addSecondOnStartTreatment()
-      this.addSecondOnProceedTreatment()
-      this.addSecondOnChecksOut()
+      this.addMinuteOnPatientArrived()
+      this.addMinuteOnFillsPapework()
+      this.addMinuteOnProcessPaperwork()
+      this.addMinuteOnGoesInEmergency()
+      this.addMinuteOnStartTreatment()
+      this.addMinuteOnProceedTreatment()
+      this.addMinuteOnChecksOut()
+      this.addMinuteToRequests()
     },
-    addSecondOnPatientArrived: function () {
+    addMinuteToRequests: function () {
+      this.messagesAskingForRoom.forEach(element => {
+        element.timeWaited++
+      })
+      this.messagesAskingForPhysicians.forEach(element => {
+        element.timeWaited++
+      })
+
+    },
+    addMinuteOnPatientArrived: function () {
       this.patientsArrived.forEach(element => {
         element.minTime = Math.max(0, element.minTime - 1)
         element.maxTime = Math.max(0, element.maxTime - 1)
@@ -533,7 +578,7 @@ export default {
         }
       })
     },
-    addSecondOnFillsPapework: function () {
+    addMinuteOnFillsPapework: function () {
       this.paperworkToFill.forEach(element => {
         element.minTime = Math.max(0, element.minTime - 1)
         element.maxTime = Math.max(0, element.maxTime - 1)
@@ -546,7 +591,7 @@ export default {
         }
       })
     },
-    addSecondOnProcessPaperwork: function () {
+    addMinuteOnProcessPaperwork: function () {
       var nurses = this.nursesAvailable
       this.paperworkFilled.forEach(element => {
         if (nurses > 0) {
@@ -563,21 +608,21 @@ export default {
         }
       })
     },
-    addSecondOnGoesInEmergency: function () {
+    addMinuteOnGoesInEmergency: function () {
       this.paperworkProcessFinished.forEach(element => {
         if (this.roomsAvailable > 0) {
           this.goesInEmergencyRoom(element.id)
         }
       })
     },
-    addSecondOnStartTreatment: function () {
+    addMinuteOnStartTreatment: function () {
       this.patientsWaitingInEmergencyRoom.forEach(element => {
         if (this.physiciansAvailable > 0) {
           this.startTreatment(element.id)
         }
       })
     },
-    addSecondOnProceedTreatment: function () {
+    addMinuteOnProceedTreatment: function () {
       this.patientsUnderTreatment.forEach(element => {
         element.minTime = Math.max(0, element.minTime - 1)
         element.maxTime = Math.max(0, element.maxTime - 1)
@@ -590,7 +635,7 @@ export default {
         }
       })
     },
-    addSecondOnChecksOut: function () {
+    addMinuteOnChecksOut: function () {
       this.patientsHealed.forEach(element => {
         element.minTime = Math.max(0, element.minTime - 1)
         element.maxTime = Math.max(0, element.maxTime - 1)
@@ -617,7 +662,7 @@ export default {
 
       if (!this.youRequestedAPhysician &&
         this.patientsWaitingInEmergencyRoom.length - this.physiciansAvailable >= 3) {
-        this.requestFormAPhysician()
+        this.requestForAPhysician()
         this.youRequestedAPhysician = true
       }
 
@@ -641,7 +686,7 @@ export default {
         this.outsideOffersAPhysician()
       }
 
-      this.addASecond()
+      this.addAMinute()
       
       setTimeout(this.launchAutonomousSystem, 500)
     }
