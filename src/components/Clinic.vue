@@ -713,27 +713,27 @@ export default {
   }
 }
 
+// represent any request for a room that transit into b0
 class RequestForRoom {
   constructor(isItFromYourService, timeWaited){
-    this.isItFromYourService = isItFromYourService
-    this.timeWaited = timeWaited
+    this.isItFromYourService = isItFromYourService // a boolean to know if the request was from the service
+    this.timeWaited = timeWaited // a counter to know how much time has past since the request was emitted
   }
 }
-
+// represent any request for a physician that transit into b1
 class RequestForPhysician {
   constructor(isItFromYourService, timeWaited){
-    this.isItFromYourService = isItFromYourService
-    this.timeWaited = timeWaited
+    this.isItFromYourService = isItFromYourService // a bolean to know if the request was from the service
+    this.timeWaited = timeWaited // a counter to know how much time has past since the request was emitted
   }
 }
-
-
+// represent the a client in a step (patient comes in,	patient fills the paperwork,	paperwork filled, ... )
 class Step {
   constructor(nameOfClient, minTime, maxTime, id){
-    this.nameOfClient = nameOfClient
-    this.maxTime = maxTime
-    this.minTime = minTime
-    this.id = id
+    this.nameOfClient = nameOfClient // the name of the patient
+    this.maxTime = maxTime  // the maximum time amount of time the patient should wait in this step, if the maxTime == 0 then the patient should go to the next step or leave the service
+    this.minTime = minTime  // the minimum amount of time the the patient should wait in this step, if the minTime <= 0 then the patient can go to the next step, but if the minTime >= 0 then the patient cannot go to the next step
+    this.id = id // the id of the client
   }
 }
 </script>
