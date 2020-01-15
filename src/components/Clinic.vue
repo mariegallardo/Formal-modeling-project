@@ -48,6 +48,12 @@
           <tr>
             <td>Number of available rooms:{{roomsAvailable}}</td>
           </tr>
+          <tr>
+            <td>Total number of rooms:{{totalOfRooms}}</td>
+          </tr>
+          <tr>
+            <td>Total number of physicians:{{totalOfPhysicians}}</td>
+          </tr>
         </tbody>
       </table>
       <br/>
@@ -314,6 +320,9 @@ export default {
       patientsHealed: [],
       nursesAvailable: 5,
       roomsAvailable: 5,
+      totalOfRooms:5,
+      totalOfPhysicians:5,
+      totalOfNurses:5,
       physiciansAvailable: 5,
       messagesAskingForRoom: [],
       messagesAskingForPhysicians: [],
@@ -346,7 +355,7 @@ export default {
       }
     },
     acceptPatient: function (id) {
-      if (this.totalPatientsBeforeTreatment >= 5) {
+      if (this.totalPatientsBeforeTreatment >= Math.min(this.totalOfPhysicians,this.totalOfRooms, 2 * this.totalOfNurses)) {
         return false
       }
       
@@ -478,6 +487,7 @@ export default {
       if (i < this.messagesAskingForRoom.length && this.roomsAvailable > 1) {
         this.messagesAskingForRoom.splice(i, 1)
         this.roomsAvailable--
+        this.totalOfRooms--
       }
     },
     rejectDemandForRoom: function () {
@@ -496,6 +506,7 @@ export default {
       if (this.messagesAskingForRoom.length > 0) {
         if (this.messagesAskingForRoom[0].isItFromYourService) {
           this.roomsAvailable++
+          this.totalOfRooms++
           this.youRequestedARoom = false
         }
         this.messagesAskingForRoom.splice(0, 1)
@@ -516,6 +527,7 @@ export default {
       if (i < this.messagesAskingForPhysicians.length && this.physiciansAvailable > 1) {
         this.messagesAskingForPhysicians.splice(i, 1)
         this.physiciansAvailable--
+        this.totalOfPhysicians--
       }
     },
     rejectDemandForPhysician: function () {
@@ -534,6 +546,7 @@ export default {
       if (this.messagesAskingForPhysicians.length > 0) {
         if (this.messagesAskingForPhysicians[0].isItFromYourService) {
           this.physiciansAvailable++
+          this.totalOfPhysicians++
           this.youRequestedAPhysician = false
         }
         this.messagesAskingForPhysicians.splice(0, 1)
