@@ -1,29 +1,20 @@
 # emergency-care
 
 ## Project setup
+
+git clone https://github.com/mariegallardo/Formal-modeling-project.git
+
+In the directory :
 ```
 npm install
 ```
 
-### Compiles and hot-reloads for development
+to start and test the implementation :
+
 ```
 npm run serve
 ```
 
-### Compiles and minifies for production
-```
-npm run build
-```
+copy and paste the local url provided to your browser
 
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+and test the implementation.
